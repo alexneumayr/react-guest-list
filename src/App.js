@@ -15,6 +15,12 @@ async function createGuest(firstName, lastName) {
   console.log('API response from createGuest()', createdGuest);
 }
 
+async function deleteGuest(id) {
+  const response = await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
+  const deletedGuest = await response.json();
+  console.log('API response from deleteGuest()', deletedGuest);
+}
+
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -59,7 +65,8 @@ export default function App() {
         {allGuests.map((guest) => {
           return (
             <div data-test-id="guest" key={`guest-${guest.id}`}>
-              {guest.firstName} {guest.lastName}
+              {guest.firstName} {guest.lastName}{' '}
+              <button onClick={() => deleteGuest(guest.id)}>Remove</button>
             </div>
           );
         })}
