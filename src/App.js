@@ -1,22 +1,41 @@
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const baseUrl = 'http://localhost:4000';
+
+async function createGuest(firstName, lastName) {
+  const response = await fetch(`${baseUrl}/guests`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ firstName: firstName, lastName: lastName }),
+  });
+  const createdGuest = await response.json();
+  console.log('API response from createGuest()', createdGuest);
+}
 
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [guests, setGuests] = useState([]);
-  /* guest object properties: id, firstName, lastName, attending */
+  const [allGuests, setAllGuests] = useState([]);
 
   function handleFormSubmit(event) {
     event.preventDefault();
-    const tempGuestArray = [
-      ...guests,
-      { firstName: firstName, lastName: lastName, attending: false },
-    ];
-    setGuests(tempGuestArray);
-    setFirstName('');
-    setLastName('');
+
+    createGuest(firstName, lastName).catch((error) => console.log(error));
+    /* setFirstName('');
+    setLastName(''); */
   }
+
+  async function getAllGuests() {
+    const response = await fetch(`${baseUrl}/guests`);
+    setAllGuests(await response.json());
+  }
+
+  useEffect(() => {
+    getAllGuests().catch((error) => console.log(error));
+  });
 
   return (
     <>
@@ -37,9 +56,9 @@ export default function App() {
         <input type="submit" hidden />
       </form>
       <div>
-        {guests.map((guest) => {
+        {allGuests.map((guest) => {
           return (
-            <div data-test-id="guest">
+            <div data-test-id="guest" key={`guest-${guest.id}`}>
               {guest.firstName} {guest.lastName}
             </div>
           );
