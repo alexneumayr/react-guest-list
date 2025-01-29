@@ -36,14 +36,28 @@ async function toggleGuestAttending(id, checkboxStatus) {
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [allGuests, setAllGuests] = useState([]);
+  const [shownGuests, setShownGuests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState({ status: 'all' });
 
   function deleteAllAttendingGuests() {
-    const allAttendingGuests = allGuests.filter((guest) => guest.attending);
+    const allAttendingGuests = shownGuests.filter((guest) => guest.attending);
     allAttendingGuests.forEach((guest) => {
       deleteGuest(guest.id).catch((error) => console.log(error));
     });
+  }
+
+  function filterGuests(guestArray) {
+    switch (filter.status) {
+      case 'attending':
+        return guestArray.filter((guest) => guest.attending);
+      case 'notattending':
+        return guestArray.filter((guest) => !guest.attending);
+      case 'all':
+        return guestArray;
+      default:
+        throw new Error('Error filtering guests');
+    }
   }
 
   function handleFormSubmit(event) {
@@ -54,17 +68,22 @@ export default function App() {
     setLastName(''); */
   }
 
-  async function getAllGuests() {
+  async function getGuests() {
     const response = await fetch(`${baseUrl}/guests`);
-    setAllGuests(await response.json());
+    setShownGuests(filterGuests(await response.json()));
     if (isLoading) {
       setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    getAllGuests().catch((error) => console.log(error));
+    getGuests().catch((error) => console.log(error));
   });
+
+  function handleFilterCheckboxClicked(event) {
+    const tempFilter = { status: event.currentTarget.value };
+    setFilter(tempFilter);
+  }
 
   return (
     <>
@@ -90,7 +109,7 @@ export default function App() {
         'Loading...'
       ) : (
         <div>
-          {allGuests.map((guest) => {
+          {shownGuests.map((guest) => {
             return (
               <div data-test-id="guest" key={`guest-${guest.id}`}>
                 {guest.firstName} {guest.lastName}{' '}
@@ -112,6 +131,40 @@ export default function App() {
           <button onClick={() => deleteAllAttendingGuests()}>
             Remove all attending guests
           </button>
+          <fieldset>
+            <legend>Filter</legend>
+
+            <div>
+              <input
+                type="radio"
+                id="all"
+                value="all"
+                name="filter-selection"
+                onClick={handleFilterCheckboxClicked}
+              />
+              <label htmlFor="all">all</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="attending"
+                value="attending"
+                name="filter-selection"
+                onClick={handleFilterCheckboxClicked}
+              />
+              <label htmlFor="attending">attending</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="notattending"
+                value="notattending"
+                name="filter-selection"
+                onClick={handleFilterCheckboxClicked}
+              />
+              <label htmlFor="notattending">not attending</label>
+            </div>
+          </fieldset>
         </div>
       )}
     </>
