@@ -21,10 +21,23 @@ async function deleteGuest(id) {
   console.log('API response from deleteGuest()', deletedGuest);
 }
 
+async function toggleGuestAttending(id, checkboxStatus) {
+  const response = await fetch(`${baseUrl}/guests/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ attending: checkboxStatus }),
+  });
+  const updatedGuest = await response.json();
+  console.log('API response from toggleGuestAttending()', updatedGuest);
+}
+
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [allGuests, setAllGuests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   function handleFormSubmit(event) {
     event.preventDefault();
@@ -37,6 +50,9 @@ export default function App() {
   async function getAllGuests() {
     const response = await fetch(`${baseUrl}/guests`);
     setAllGuests(await response.json());
+    if (isLoading) {
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -51,6 +67,7 @@ export default function App() {
           id="first-name-input"
           value={firstName}
           onChange={(event) => setFirstName(event.currentTarget.value)}
+          disabled={isLoading}
         />
         <br />
         <label htmlFor="last-name-input">Last name</label>
@@ -58,19 +75,35 @@ export default function App() {
           id="last-name-input"
           value={lastName}
           onChange={(event) => setLastName(event.currentTarget.value)}
+          disabled={isLoading}
         />
         <input type="submit" hidden />
       </form>
-      <div>
-        {allGuests.map((guest) => {
-          return (
-            <div data-test-id="guest" key={`guest-${guest.id}`}>
-              {guest.firstName} {guest.lastName}{' '}
-              <button onClick={() => deleteGuest(guest.id)}>Remove</button>
-            </div>
-          );
-        })}
-      </div>
+      {isLoading ? (
+        'Loading...'
+      ) : (
+        <div>
+          {allGuests.map((guest) => {
+            return (
+              <div data-test-id="guest" key={`guest-${guest.id}`}>
+                {guest.firstName} {guest.lastName}{' '}
+                <button onClick={() => deleteGuest(guest.id)}>Remove</button>
+                <input
+                  type="checkbox"
+                  value={guest.attending}
+                  aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+                  onChange={(event) => {
+                    toggleGuestAttending(
+                      guest.id,
+                      event.currentTarget.checked,
+                    ).catch((error) => console.log(error));
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }
