@@ -39,6 +39,13 @@ export default function App() {
   const [allGuests, setAllGuests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  function deleteAllAttendingGuests() {
+    const allAttendingGuests = allGuests.filter((guest) => guest.attending);
+    allAttendingGuests.forEach((guest) => {
+      deleteGuest(guest.id).catch((error) => console.log(error));
+    });
+  }
+
   function handleFormSubmit(event) {
     event.preventDefault();
 
@@ -102,6 +109,9 @@ export default function App() {
               </div>
             );
           })}
+          <button onClick={() => deleteAllAttendingGuests()}>
+            Remove all attending guests
+          </button>
         </div>
       )}
     </>
