@@ -1,37 +1,15 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-
-const baseUrl = 'http://localhost:4000';
-
-async function createGuest(firstName, lastName) {
-  const response = await fetch(`${baseUrl}/guests`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ firstName: firstName, lastName: lastName }),
-  });
-  const createdGuest = await response.json();
-  console.log('API response from createGuest()', createdGuest);
-}
-
-async function deleteGuest(id) {
-  const response = await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
-  const deletedGuest = await response.json();
-  console.log('API response from deleteGuest()', deletedGuest);
-}
-
-async function toggleGuestAttending(id, checkboxStatus) {
-  const response = await fetch(`${baseUrl}/guests/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ attending: checkboxStatus }),
-  });
-  const updatedGuest = await response.json();
-  console.log('API response from toggleGuestAttending()', updatedGuest);
-}
+import EditGuestForm from './EditGuestForm/EditGuestForm';
+import {
+  createGuest,
+  deleteAllAttendingGuests,
+  deleteGuest,
+  getGuests,
+  getSingleGuestForEditing,
+  toggleGuestAttending,
+  updateGuestNames,
+} from './util/api-functions.js';
 
 export default function App() {
   const [firstName, setFirstName] = useState('');
@@ -44,40 +22,11 @@ export default function App() {
   const [changedLastName, setChangedLastName] = useState('');
   const [guestToEdit, setGuestToEdit] = useState({});
 
-  async function updateGuestNames(id) {
-    const response = await fetch(`${baseUrl}/guests/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        firstName: changedFirstName,
-        lastName: changedLastName,
-      }),
-    });
-    const updatedGuest = await response.json();
-    console.log('API response from updateGuestNames()', updatedGuest);
-  }
-
-  function deleteAllAttendingGuests() {
-    const allAttendingGuests = shownGuests.filter((guest) => guest.attending);
-    allAttendingGuests.forEach((guest) => {
-      deleteGuest(guest.id).catch((error) => console.log(error));
-    });
-  }
-
-  function filterGuests(guestArray) {
-    switch (filter.status) {
-      case 'attending':
-        return guestArray.filter((guest) => guest.attending);
-      case 'notattending':
-        return guestArray.filter((guest) => !guest.attending);
-      case 'all':
-        return guestArray;
-      default:
-        throw new Error('Error filtering guests');
-    }
-  }
+  useEffect(() => {
+    getGuests(setShownGuests, filter, isLoading, setIsLoading).catch((error) =>
+      console.log(error),
+    );
+  }, [filter, isLoading, editMode]);
 
   function handleTopFormSubmit(event) {
     event.preventDefault();
@@ -90,29 +39,19 @@ export default function App() {
     }
   }
 
-  async function getGuests() {
-    const response = await fetch(`${baseUrl}/guests`);
-    setShownGuests(filterGuests(await response.json()));
-    if (isLoading) {
-      setIsLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    getGuests().catch((error) => console.log(error));
-  });
-
   function handleFilterCheckboxClicked(event) {
     const tempFilter = { status: event.currentTarget.value };
     setFilter(tempFilter);
   }
 
-  async function getSingleGuestForEditing(id) {
-    const response = await fetch(`${baseUrl}/guests/${id}`);
-    const guestForEditing = await response.json();
-    setGuestToEdit(guestForEditing);
-    setChangedFirstName(guestForEditing.firstName);
-    setChangedLastName(guestForEditing.lastName);
+  function handleGuestDoubleclick(id) {
+    setEditMode(true);
+    getSingleGuestForEditing(
+      id,
+      setGuestToEdit,
+      setChangedFirstName,
+      setChangedLastName,
+    ).catch((error) => console.log(error));
   }
 
   return (
@@ -144,12 +83,7 @@ export default function App() {
               <div data-test-id="guest" key={`guest-${guest.id}`}>
                 <div
                   style={{ display: 'inline' }}
-                  onDoubleClick={() => {
-                    setEditMode(true);
-                    getSingleGuestForEditing(guest.id).catch((error) =>
-                      console.log(error),
-                    );
-                  }}
+                  onDoubleClick={() => handleGuestDoubleclick(guest.id)}
                 >
                   {guest.firstName} {guest.lastName}
                 </div>
@@ -168,7 +102,7 @@ export default function App() {
               </div>
             );
           })}
-          <button onClick={() => deleteAllAttendingGuests()}>
+          <button onClick={() => deleteAllAttendingGuests(shownGuests)}>
             Remove all attending guests
           </button>
           <fieldset>
@@ -207,50 +141,16 @@ export default function App() {
             </div>
           </fieldset>
           {editMode && (
-            <div>
-              <form>
-                <label htmlFor="first-name-input">First name</label>
-                <input
-                  id="first-name-input"
-                  value={changedFirstName}
-                  onChange={(event) =>
-                    setChangedFirstName(event.currentTarget.value)
-                  }
-                  disabled={isLoading}
-                />
-                <br />
-                <label htmlFor="last-name-input">Last name</label>
-                <input
-                  id="last-name-input"
-                  value={changedLastName}
-                  onChange={(event) =>
-                    setChangedLastName(event.currentTarget.value)
-                  }
-                  disabled={isLoading}
-                />
-                <br />
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateGuestNames(guestToEdit.id).catch((error) =>
-                      console.log(error),
-                    );
-                    setEditMode(false);
-                  }}
-                >
-                  Save changes
-                </button>
-                <br />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditMode(false);
-                  }}
-                >
-                  Cancel
-                </button>
-              </form>
-            </div>
+            <EditGuestForm
+              changedFirstName={changedFirstName}
+              setChangedFirstName={setChangedFirstName}
+              changedLastName={changedLastName}
+              setChangedLastName={setChangedLastName}
+              isLoading={isLoading}
+              setEditMode={setEditMode}
+              updateGuestNames={updateGuestNames}
+              guestToEdit={guestToEdit}
+            />
           )}
         </div>
       )}
