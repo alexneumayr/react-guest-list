@@ -151,8 +151,7 @@ export default function App() {
                     );
                   }}
                 >
-                  {guest.firstName} {guest.lastName}{' '}
-                  {JSON.stringify(guest.attending)}
+                  {guest.firstName} {guest.lastName}
                 </div>
                 <button onClick={() => deleteGuest(guest.id)}>Remove</button>
                 <input
