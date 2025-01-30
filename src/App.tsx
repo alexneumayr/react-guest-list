@@ -173,7 +173,7 @@ export default function App() {
               <label htmlFor="notattending">not attending</label>
             </div>
           </fieldset>
-          {/* If edit mode it on it displays input fields to change the names of the guest */}
+          {/* If edit mode is on it displays input fields to change the names of the guest */}
           {editMode && (
             <EditGuestForm
               changedFirstName={changedFirstName}
