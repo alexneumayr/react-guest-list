@@ -1,0 +1,75 @@
+.name-input {
+  height: 50px;
+  width: 500px;
+  font-size: 20px;
+  padding: 20px;
+  font-family: Figtree, sans-serif;
+  font-weight: 500;
+  display: block;
+}
+
+input::placeholder {
+  font-style: italic;
+}
+
+.guest-container {
+  height: 50px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+input[type='checkbox'] {
+  width: 20px;
+  transform: scale(1.5);
+  margin: 10px;
+}
+
+.remove-icon {
+  font-size: 20px;
+}
+
+.remove-button {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: 10px;
+  width: 30px;
+  height: 30px;
+}
+
+.remove-button:hover svg {
+  color: white;
+}
+
+.remove-button:hover {
+  background-color: red;
+  color: white;
+}
+
+.guest-name:hover {
+  font-weight: 800;
+}
+
+.all-guests-container {
+  width: 500px;
+  margin-top: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  background-color: rgb(47, 51, 73);
+  margin-bottom: 20px;
+}
+
+.name-label {
+  font-weight: 800;
+}
+
+main {
+  margin: 0 20px;
+}
