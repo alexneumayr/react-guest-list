@@ -1,5 +1,7 @@
+// Sets the base URL for all API functions
 const baseUrl = 'http://localhost:4000';
 
+// Defines data types of the guest object for TypeScript
 type Guest = {
   id: number;
   firstName: string;
@@ -7,6 +9,7 @@ type Guest = {
   attending: boolean;
 };
 
+// Function to create a new guest
 export async function createGuest(firstName: string, lastName: string) {
   const response = await fetch(`${baseUrl}/guests`, {
     method: 'POST',
@@ -19,12 +22,14 @@ export async function createGuest(firstName: string, lastName: string) {
   console.log('API response from createGuest()', createdGuest);
 }
 
+// Function to delete a single guest
 export async function deleteGuest(id: number) {
   const response = await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
   const deletedGuest = await response.json();
   console.log('API response from deleteGuest()', deletedGuest);
 }
 
+// Function to toggle the attending status of a guest
 export async function toggleGuestAttending(
   id: number,
   checkboxStatus: boolean,
@@ -40,6 +45,7 @@ export async function toggleGuestAttending(
   console.log('API response from toggleGuestAttending()', updatedGuest);
 }
 
+// Function to change the names of a guest
 export async function updateGuestNames(
   id: number,
   changedFirstName: string,
@@ -59,6 +65,7 @@ export async function updateGuestNames(
   console.log('API response from updateGuestNames()', updatedGuest);
 }
 
+// Function to delete all attending guests
 export function deleteAllAttendingGuests(shownGuests: Guest[]) {
   const allAttendingGuests = shownGuests.filter((guest) => guest.attending);
   allAttendingGuests.forEach((guest) => {
@@ -66,6 +73,7 @@ export function deleteAllAttendingGuests(shownGuests: Guest[]) {
   });
 }
 
+// Function to fetch the guest list and apply the filter
 export async function getGuests(
   setShownGuests: (guests: Guest[]) => void,
   filter: { status: string },
@@ -101,6 +109,7 @@ export async function getGuests(
   }
 }
 
+// Function to get the data of a specific guest
 export async function getSingleGuestForEditing(
   id: number,
   setGuestToEdit: (guest: Guest) => void,

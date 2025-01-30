@@ -11,6 +11,7 @@ import {
   updateGuestNames,
 } from './util/api-functions';
 
+// Defines data types of the guest object for TypeScript
 type Guest = {
   id: number;
   firstName: string;
@@ -19,8 +20,8 @@ type Guest = {
 };
 
 export default function App() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState(''); // state of the input field for the first name
+  const [lastName, setLastName] = useState(''); // state of the input field for the last name
   const [shownGuests, setShownGuests] = useState([
     {
       id: 0,
@@ -28,36 +29,41 @@ export default function App() {
       lastName: '',
       attending: false,
     },
-  ]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState({ status: 'all' });
-  const [editMode, setEditMode] = useState(false);
-  const [changedFirstName, setChangedFirstName] = useState('');
-  const [changedLastName, setChangedLastName] = useState('');
+  ]); // state of the displayed guest list (for TypeScript it needs to already have a guest item)
+  const [isLoading, setIsLoading] = useState(true); // state to track if the guest list has been fetched
+  const [filter, setFilter] = useState({ status: 'all' }); // state of the filter for the guest list
+  const [editMode, setEditMode] = useState(false); // state of the edit mode
+  const [changedFirstName, setChangedFirstName] = useState(''); // state of first name input in edit mode
+  const [changedLastName, setChangedLastName] = useState(''); // state of last name input in edit mode
   const [guestToEdit, setGuestToEdit] = useState({
     id: 0,
     firstName: '',
     lastName: '',
     attending: false,
-  });
+  }); // state of the guest who is is being changed in edit mode (initialised for TypeScript)
 
+  // Fetches the guest list on first render and when something changes
   useEffect(() => {
     getGuests(setShownGuests, filter, isLoading, setIsLoading).catch((error) =>
       console.log(error),
     );
   }, [filter, isLoading, editMode, shownGuests]);
 
+  // Creates a new user and clears input fields when the Enter key is pressed
   function handleTopFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Checks if the user has typed in the full name
     if (firstName && lastName) {
       createGuest(firstName, lastName).catch((error) => console.log(error));
       setFirstName('');
       setLastName('');
     } else {
+      // Displays an alert if the user has not typed in the full name
       alert('Please input both first name and last name');
     }
   }
 
+  // Sets the filter accordingly when the filter radio button has been changed
   function handleFilterCheckboxClicked(
     event: React.MouseEvent<HTMLInputElement>,
   ) {
@@ -65,6 +71,7 @@ export default function App() {
     setFilter(tempFilter);
   }
 
+  // Starts edit mode when the user double-clicks on a guest name
   function handleGuestDoubleclick(id: number) {
     setEditMode(true);
     getSingleGuestForEditing(
@@ -77,6 +84,7 @@ export default function App() {
 
   return (
     <>
+      {/* Form containing the input fields for the names */}
       <form onSubmit={handleTopFormSubmit}>
         <label htmlFor="first-name-input">First name</label>
         <input
@@ -93,12 +101,16 @@ export default function App() {
           onChange={(event) => setLastName(event.currentTarget.value)}
           disabled={isLoading}
         />
+        {/* Hidden submit button to allow form submit when the user presses the Enter key */}
         <input type="submit" hidden />
       </form>
+      {/* Display loading message as long as the guest list hasn't been fetched */}
       {isLoading ? (
         'Loading...'
       ) : (
+        /* Display the guest list after it has been fetched */
         <div>
+          {/* Map through the guest array and display the properties and the related buttons and checkboxes */}
           {shownGuests.map((guest: Guest) => {
             return (
               <div data-test-id="guest" key={`guest-${guest.id}`}>
@@ -126,9 +138,9 @@ export default function App() {
           <button onClick={() => deleteAllAttendingGuests(shownGuests)}>
             Remove all attending guests
           </button>
+          {/* Shows the filter for the guest list */}
           <fieldset>
             <legend>Filter</legend>
-
             <div>
               <input
                 type="radio"
@@ -161,6 +173,7 @@ export default function App() {
               <label htmlFor="notattending">not attending</label>
             </div>
           </fieldset>
+          {/* If edit mode it on it displays input fields to change the names of the guest */}
           {editMode && (
             <EditGuestForm
               changedFirstName={changedFirstName}

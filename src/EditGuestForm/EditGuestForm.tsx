@@ -1,3 +1,4 @@
+// Defines data types of the guest object for TypeScript
 type Guest = {
   id: number;
   firstName: string;
@@ -5,6 +6,7 @@ type Guest = {
   attending: boolean;
 };
 
+// Defines data types of the props of the component for TypeScript
 type Props = {
   changedFirstName: string;
   setChangedFirstName: (name: string) => void;
@@ -30,6 +32,7 @@ export default function EditGuestForm({
   updateGuestNames,
   guestToEdit,
 }: Props) {
+  // Function that updates the user data and exits edit mode when the "Save changes" button is clicked
   function handleSaveChangesButtonClick() {
     updateGuestNames(guestToEdit.id, changedFirstName, changedLastName).catch(
       (error) => console.log(error),
@@ -38,6 +41,7 @@ export default function EditGuestForm({
   }
   return (
     <div>
+      {/* Form containing input fields for the names and buttons to save changes or cancel */}
       <form>
         <label htmlFor="first-name-input">First name</label>
         <input
