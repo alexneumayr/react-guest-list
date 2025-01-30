@@ -39,6 +39,25 @@ export default function App() {
   const [shownGuests, setShownGuests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState({ status: 'all' });
+  const [editMode, setEditMode] = useState(false);
+  const [changedFirstName, setChangedFirstName] = useState('');
+  const [changedLastName, setChangedLastName] = useState('');
+  const [guestToEdit, setGuestToEdit] = useState({});
+
+  async function updateGuestNames(id) {
+    const response = await fetch(`${baseUrl}/guests/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstName: changedFirstName,
+        lastName: changedLastName,
+      }),
+    });
+    const updatedGuest = await response.json();
+    console.log('API response from updateGuestNames()', updatedGuest);
+  }
 
   function deleteAllAttendingGuests() {
     const allAttendingGuests = shownGuests.filter((guest) => guest.attending);
@@ -60,12 +79,15 @@ export default function App() {
     }
   }
 
-  function handleFormSubmit(event) {
+  function handleTopFormSubmit(event) {
     event.preventDefault();
-
-    createGuest(firstName, lastName).catch((error) => console.log(error));
-    /* setFirstName('');
-    setLastName(''); */
+    if (firstName && lastName) {
+      createGuest(firstName, lastName).catch((error) => console.log(error));
+      setFirstName('');
+      setLastName('');
+    } else {
+      alert('Please input both first name and last name');
+    }
   }
 
   async function getGuests() {
@@ -85,9 +107,17 @@ export default function App() {
     setFilter(tempFilter);
   }
 
+  async function getSingleGuestForEditing(id) {
+    const response = await fetch(`${baseUrl}/guests/${id}`);
+    const guestForEditing = await response.json();
+    setGuestToEdit(guestForEditing);
+    setChangedFirstName(guestForEditing.firstName);
+    setChangedLastName(guestForEditing.lastName);
+  }
+
   return (
     <>
-      <form onSubmit={handleFormSubmit}>
+      <form onSubmit={handleTopFormSubmit}>
         <label htmlFor="first-name-input">First name</label>
         <input
           id="first-name-input"
@@ -112,11 +142,22 @@ export default function App() {
           {shownGuests.map((guest) => {
             return (
               <div data-test-id="guest" key={`guest-${guest.id}`}>
-                {guest.firstName} {guest.lastName}{' '}
+                <div
+                  style={{ display: 'inline' }}
+                  onDoubleClick={() => {
+                    setEditMode(true);
+                    getSingleGuestForEditing(guest.id).catch((error) =>
+                      console.log(error),
+                    );
+                  }}
+                >
+                  {guest.firstName} {guest.lastName}{' '}
+                  {JSON.stringify(guest.attending)}
+                </div>
                 <button onClick={() => deleteGuest(guest.id)}>Remove</button>
                 <input
                   type="checkbox"
-                  value={guest.attending}
+                  checked={guest.attending}
                   aria-label={`${guest.firstName} ${guest.lastName} attending status`}
                   onChange={(event) => {
                     toggleGuestAttending(
@@ -141,6 +182,7 @@ export default function App() {
                 value="all"
                 name="filter-selection"
                 onClick={handleFilterCheckboxClicked}
+                defaultChecked
               />
               <label htmlFor="all">all</label>
             </div>
@@ -165,6 +207,52 @@ export default function App() {
               <label htmlFor="notattending">not attending</label>
             </div>
           </fieldset>
+          {editMode && (
+            <div>
+              <form>
+                <label htmlFor="first-name-input">First name</label>
+                <input
+                  id="first-name-input"
+                  value={changedFirstName}
+                  onChange={(event) =>
+                    setChangedFirstName(event.currentTarget.value)
+                  }
+                  disabled={isLoading}
+                />
+                <br />
+                <label htmlFor="last-name-input">Last name</label>
+                <input
+                  id="last-name-input"
+                  value={changedLastName}
+                  onChange={(event) =>
+                    setChangedLastName(event.currentTarget.value)
+                  }
+                  disabled={isLoading}
+                />
+                <br />
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateGuestNames(guestToEdit.id).catch((error) =>
+                      console.log(error),
+                    );
+                    setEditMode(false);
+                  }}
+                >
+                  Save changes
+                </button>
+                <br />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditMode(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       )}
     </>
