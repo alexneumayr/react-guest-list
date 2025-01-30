@@ -1,6 +1,13 @@
 const baseUrl = 'http://localhost:4000';
 
-export async function createGuest(firstName, lastName) {
+type Guest = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  attending: boolean;
+};
+
+export async function createGuest(firstName: string, lastName: string) {
   const response = await fetch(`${baseUrl}/guests`, {
     method: 'POST',
     headers: {
@@ -12,13 +19,16 @@ export async function createGuest(firstName, lastName) {
   console.log('API response from createGuest()', createdGuest);
 }
 
-export async function deleteGuest(id) {
+export async function deleteGuest(id: number) {
   const response = await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
   const deletedGuest = await response.json();
   console.log('API response from deleteGuest()', deletedGuest);
 }
 
-export async function toggleGuestAttending(id, checkboxStatus) {
+export async function toggleGuestAttending(
+  id: number,
+  checkboxStatus: boolean,
+) {
   const response = await fetch(`${baseUrl}/guests/${id}`, {
     method: 'PUT',
     headers: {
@@ -30,7 +40,11 @@ export async function toggleGuestAttending(id, checkboxStatus) {
   console.log('API response from toggleGuestAttending()', updatedGuest);
 }
 
-export async function updateGuestNames(id, changedFirstName, changedLastName) {
+export async function updateGuestNames(
+  id: number,
+  changedFirstName: string,
+  changedLastName: string,
+) {
   const response = await fetch(`${baseUrl}/guests/${id}`, {
     method: 'PUT',
     headers: {
@@ -45,7 +59,7 @@ export async function updateGuestNames(id, changedFirstName, changedLastName) {
   console.log('API response from updateGuestNames()', updatedGuest);
 }
 
-export function deleteAllAttendingGuests(shownGuests) {
+export function deleteAllAttendingGuests(shownGuests: Guest[]) {
   const allAttendingGuests = shownGuests.filter((guest) => guest.attending);
   allAttendingGuests.forEach((guest) => {
     deleteGuest(guest.id).catch((error) => console.log(error));
@@ -53,19 +67,27 @@ export function deleteAllAttendingGuests(shownGuests) {
 }
 
 export async function getGuests(
-  setShownGuests,
-  filter,
-  isLoading,
-  setIsLoading,
+  setShownGuests: (guests: Guest[]) => void,
+  filter: { status: string },
+  isLoading: boolean,
+  setIsLoading: (loadingStatus: boolean) => void,
 ) {
   const response = await fetch(`${baseUrl}/guests`);
-  const allGuests = await response.json();
+  const allGuests: Guest[] = await response.json();
   switch (filter.status) {
     case 'attending':
-      setShownGuests(allGuests.filter((guest) => guest.attending));
+      setShownGuests(
+        allGuests.filter((guest: Guest) => {
+          return guest.attending;
+        }),
+      );
       break;
     case 'notattending':
-      setShownGuests(allGuests.filter((guest) => !guest.attending));
+      setShownGuests(
+        allGuests.filter((guest: Guest) => {
+          return !guest.attending;
+        }),
+      );
       break;
     case 'all':
       setShownGuests(allGuests);
@@ -80,13 +102,13 @@ export async function getGuests(
 }
 
 export async function getSingleGuestForEditing(
-  id,
-  setGuestToEdit,
-  setChangedFirstName,
-  setChangedLastName,
+  id: number,
+  setGuestToEdit: (guest: Guest) => void,
+  setChangedFirstName: (name: string) => void,
+  setChangedLastName: (name: string) => void,
 ) {
   const response = await fetch(`${baseUrl}/guests/${id}`);
-  const guestForEditing = await response.json();
+  const guestForEditing: Guest = await response.json();
   setGuestToEdit(guestForEditing);
   setChangedFirstName(guestForEditing.firstName);
   setChangedLastName(guestForEditing.lastName);

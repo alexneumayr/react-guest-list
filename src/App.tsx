@@ -9,26 +9,45 @@ import {
   getSingleGuestForEditing,
   toggleGuestAttending,
   updateGuestNames,
-} from './util/api-functions.js';
+} from './util/api-functions';
+
+type Guest = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  attending: boolean;
+};
 
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [shownGuests, setShownGuests] = useState([]);
+  const [shownGuests, setShownGuests] = useState([
+    {
+      id: 0,
+      firstName: '',
+      lastName: '',
+      attending: false,
+    },
+  ]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState({ status: 'all' });
   const [editMode, setEditMode] = useState(false);
   const [changedFirstName, setChangedFirstName] = useState('');
   const [changedLastName, setChangedLastName] = useState('');
-  const [guestToEdit, setGuestToEdit] = useState({});
+  const [guestToEdit, setGuestToEdit] = useState({
+    id: 0,
+    firstName: '',
+    lastName: '',
+    attending: false,
+  });
 
   useEffect(() => {
     getGuests(setShownGuests, filter, isLoading, setIsLoading).catch((error) =>
       console.log(error),
     );
-  }, [filter, isLoading, editMode]);
+  }, [filter, isLoading, editMode, shownGuests]);
 
-  function handleTopFormSubmit(event) {
+  function handleTopFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (firstName && lastName) {
       createGuest(firstName, lastName).catch((error) => console.log(error));
@@ -39,12 +58,14 @@ export default function App() {
     }
   }
 
-  function handleFilterCheckboxClicked(event) {
+  function handleFilterCheckboxClicked(
+    event: React.MouseEvent<HTMLInputElement>,
+  ) {
     const tempFilter = { status: event.currentTarget.value };
     setFilter(tempFilter);
   }
 
-  function handleGuestDoubleclick(id) {
+  function handleGuestDoubleclick(id: number) {
     setEditMode(true);
     getSingleGuestForEditing(
       id,
@@ -78,7 +99,7 @@ export default function App() {
         'Loading...'
       ) : (
         <div>
-          {shownGuests.map((guest) => {
+          {shownGuests.map((guest: Guest) => {
             return (
               <div data-test-id="guest" key={`guest-${guest.id}`}>
                 <div
