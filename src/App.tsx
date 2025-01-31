@@ -85,7 +85,7 @@ export default function App() {
   }
 
   return (
-    <>
+    <div className="App">
       <header>
         <h1>Guest list</h1>
       </header>
@@ -228,6 +228,6 @@ export default function App() {
           </div>
         )}
       </main>
-    </>
+    </div>
   );
 }
