@@ -1,0 +1,56 @@
+.editGuestFormContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editGuestForm {
+  width: 400px;
+}
+
+.editGuestForm input {
+  height: 30px;
+  width: 100%;
+  max-width: 800px;
+  font-size: 20px;
+  padding: 20px;
+  font-family: Figtree, sans-serif;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.buttonContainer {
+  display: flex;
+  margin-top: 10px;
+  justify-content: space-evenly;
+}
+
+.saveChangesButton {
+  height: 35px;
+  font-family: Figtree, sans-serif;
+  font-weight: 700;
+  color: white;
+  background-color: rgb(56, 171, 43);
+  border: none;
+  width: 150px;
+}
+
+.saveChangesButton:hover {
+  background-color: rgb(62, 113, 56);
+  cursor: pointer;
+}
+
+.cancelButton {
+  height: 35px;
+  font-family: Figtree, sans-serif;
+  font-weight: 700;
+  color: white;
+  background-color: rgb(209, 21, 21);
+  border: none;
+  width: 150px;
+}
+
+.cancelButton:hover {
+  background-color: rgb(149, 50, 50);
+  cursor: pointer;
+}

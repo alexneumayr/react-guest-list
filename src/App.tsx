@@ -171,7 +171,7 @@ export default function App() {
             {/* Only shows guest list container when there are guests to display.
             Otherwise there would just be a collapsed dark border if there are no guests. */}
             {shownGuests.length > 0 && (
-              <div className={'all-guests-container'}>
+              <div className="all-guests-container">
                 {/* Map through the guest array and display the properties and the related buttons and checkboxes */}
                 {shownGuests.map((guest: Guest) => {
                   return (
@@ -181,6 +181,7 @@ export default function App() {
                       key={`guest-${guest.id}`}
                       onDoubleClick={() => handleGuestDoubleclick(guest.id)}
                     >
+                      {/* Shows attending check box */}
                       <input
                         type="checkbox"
                         checked={guest.attending}
@@ -192,9 +193,11 @@ export default function App() {
                           ).catch((error) => console.log(error));
                         }}
                       />
+                      {/* Shows guest name */}
                       <div className="guest-name">
                         {guest.firstName} {guest.lastName}
                       </div>
+                      {/* Shows remove button */}
                       <button
                         className="remove-button"
                         onClick={() => deleteGuest(guest.id)}
@@ -212,7 +215,10 @@ export default function App() {
             )}
             {/* If edit mode is on it displays input fields to change the names of the guest */}
             {editMode && (
-              <div className="guest-list-form">
+              <div className="guest-edit-form">
+                <div className="guest-edit-header">
+                  <h2>Edit guest</h2>
+                </div>
                 <EditGuestForm
                   changedFirstName={changedFirstName}
                   setChangedFirstName={setChangedFirstName}

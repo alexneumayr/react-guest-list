@@ -1,3 +1,5 @@
+import styles from './EditGuestForm.module.css';
+
 // Defines data types of the guest object for TypeScript
 type Guest = {
   id: number;
@@ -40,9 +42,9 @@ export default function EditGuestForm({
     setEditMode(false);
   }
   return (
-    <div>
+    <div className={styles.editGuestFormContainer}>
       {/* Form containing input fields for the names and buttons to save changes or cancel */}
-      <form>
+      <form className={styles.editGuestForm}>
         <label htmlFor="first-name-input">First name</label>
         <input
           id="first-name-input"
@@ -50,7 +52,7 @@ export default function EditGuestForm({
           onChange={(event) => setChangedFirstName(event.currentTarget.value)}
           disabled={isLoading}
         />
-        <br />
+
         <label htmlFor="last-name-input">Last name</label>
         <input
           id="last-name-input"
@@ -58,19 +60,26 @@ export default function EditGuestForm({
           onChange={(event) => setChangedLastName(event.currentTarget.value)}
           disabled={isLoading}
         />
-        <br />
-        <button type="button" onClick={handleSaveChangesButtonClick}>
-          Save changes
-        </button>
-        <br />
-        <button
-          type="button"
-          onClick={() => {
-            setEditMode(false);
-          }}
-        >
-          Cancel
-        </button>
+
+        <div className={styles.buttonContainer}>
+          <button
+            className={styles.saveChangesButton}
+            type="button"
+            onClick={handleSaveChangesButtonClick}
+          >
+            Save changes
+          </button>
+          <br />
+          <button
+            className={styles.cancelButton}
+            type="button"
+            onClick={() => {
+              setEditMode(false);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
