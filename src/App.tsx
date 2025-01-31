@@ -127,21 +127,11 @@ export default function App() {
                 <div>
                   <input
                     type="radio"
-                    id="all"
-                    value="all"
-                    name="filter-selection"
-                    onClick={handleFilterCheckboxClicked}
-                    defaultChecked
-                  />
-                  <label htmlFor="all">all</label>
-                </div>
-                <div>
-                  <input
-                    type="radio"
                     id="attending"
                     value="attending"
                     name="filter-selection"
                     onClick={handleFilterCheckboxClicked}
+                    checked={filter.status === 'attending'}
                   />
                   <label htmlFor="attending">attending</label>
                 </div>
@@ -152,11 +142,21 @@ export default function App() {
                     value="notattending"
                     name="filter-selection"
                     onClick={handleFilterCheckboxClicked}
+                    checked={filter.status === 'notattending'}
                   />
                   <label htmlFor="notattending">not attending</label>
                 </div>
               </div>
-              <button onClick={() => deleteAllAttendingGuests(shownGuests)}>
+              <button
+                className="reset-filter-button"
+                onClick={() => setFilter({ status: 'all' })}
+              >
+                Reset filter
+              </button>
+              <button
+                className="remove-all-attending-guests-button"
+                onClick={() => deleteAllAttendingGuests(shownGuests)}
+              >
                 Remove all attending guests
               </button>
             </fieldset>

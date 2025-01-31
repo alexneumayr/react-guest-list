@@ -135,12 +135,7 @@ header {
   font-family: Figtree, sans-serif;
   font-weight: 700;
   color: white;
-  background-color: rgb(47, 51, 73);
-}
-
-.filter button:hover {
-  background-color: black;
-  cursor: pointer;
+  border: 0;
 }
 
 .guest-edit-form {
@@ -169,5 +164,22 @@ header {
 }
 
 .filter label {
+  cursor: pointer;
+}
+
+.remove-all-attending-guests-button {
+  background-color: rgb(209, 21, 21);
+}
+.remove-all-attending-guests-button:hover {
+  background-color: rgb(149, 50, 50);
+  cursor: pointer;
+}
+
+.reset-filter-button {
+  background-color: rgb(47, 51, 73);
+}
+
+.reset-filter-button:hover {
+  background-color: black;
   cursor: pointer;
 }
