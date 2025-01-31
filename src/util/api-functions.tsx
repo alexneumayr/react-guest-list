@@ -1,5 +1,5 @@
 // Sets the base URL for all API functions
-const baseUrl = 'http://localhost:4000';
+const baseUrl = 'https://sfswsj-4000.csb.app';
 
 // Defines data types of the guest object for TypeScript
 type Guest = {
