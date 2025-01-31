@@ -200,6 +200,7 @@ export default function App() {
                       {/* Shows remove button */}
                       <button
                         className="remove-button"
+                        aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
                         onClick={() => deleteGuest(guest.id)}
                       >
                         <FontAwesomeIcon
