@@ -44,6 +44,10 @@ input[type='radio'] {
   font-size: 20px;
 }
 
+.guest-container:hover .remove-button {
+  background-color: rgb(239, 239, 239);
+}
+
 .remove-button {
   background-color: white;
   border: none;
@@ -54,11 +58,11 @@ input[type='radio'] {
   height: 30px;
 }
 
-.remove-button:hover svg {
+.guest-container:hover .remove-button:hover svg {
   color: white;
 }
 
-.remove-button:hover {
+.guest-container:hover .remove-button:hover {
   background-color: red;
   color: white;
   cursor: pointer;
@@ -67,6 +71,7 @@ input[type='radio'] {
 .guest-container:hover {
   font-weight: 800;
   cursor: pointer;
+  background-color: rgb(239, 239, 239);
 }
 
 .guest-container:hover:not(:first-child) {

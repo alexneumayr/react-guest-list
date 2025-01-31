@@ -74,7 +74,7 @@ export default function App() {
   }
 
   // Starts edit mode when the user double-clicks on a guest name
-  function handleGuestDoubleclick(id: number) {
+  function handleGuestClick(id: number) {
     setEditMode(true);
     getSingleGuestForEditing(
       id,
@@ -179,7 +179,7 @@ export default function App() {
                       className="guest-container"
                       data-test-id="guest"
                       key={`guest-${guest.id}`}
-                      onDoubleClick={() => handleGuestDoubleclick(guest.id)}
+                      onDoubleClick={() => handleGuestClick(guest.id)}
                     >
                       {/* Shows attending check box */}
                       <input
