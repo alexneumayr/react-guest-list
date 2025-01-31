@@ -66,8 +66,8 @@ export default function App() {
   }
 
   // Sets the filter accordingly when the filter radio button has been changed
-  function handleFilterCheckboxClicked(
-    event: React.MouseEvent<HTMLInputElement>,
+  function handleFilterCheckboxChanged(
+    event: React.ChangeEvent<HTMLInputElement>,
   ) {
     const tempFilter = { status: event.currentTarget.value };
     setFilter(tempFilter);
@@ -130,7 +130,7 @@ export default function App() {
                     id="attending"
                     value="attending"
                     name="filter-selection"
-                    onClick={handleFilterCheckboxClicked}
+                    onChange={handleFilterCheckboxChanged}
                     checked={filter.status === 'attending'}
                   />
                   <label htmlFor="attending">attending</label>
@@ -141,7 +141,7 @@ export default function App() {
                     id="notattending"
                     value="notattending"
                     name="filter-selection"
-                    onClick={handleFilterCheckboxClicked}
+                    onChange={handleFilterCheckboxChanged}
                     checked={filter.status === 'notattending'}
                   />
                   <label htmlFor="notattending">not attending</label>
