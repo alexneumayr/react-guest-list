@@ -90,130 +90,140 @@ export default function App() {
         <h1>Guest list</h1>
       </header>
       <main>
-        {/* Form containing the input fields for the names */}
-        <form onSubmit={handleTopFormSubmit}>
-          <label className="name-label" htmlFor="first-name-input">
-            First name
-          </label>
-          <input
-            className="name-input"
-            id="first-name-input"
-            value={firstName}
-            onChange={(event) => setFirstName(event.currentTarget.value)}
-            disabled={isLoading}
-            placeholder="Type in the first name of the guest"
-          />
-          <br />
-          <label className="name-label" htmlFor="last-name-input">
-            Last name
-          </label>
-          <input
-            className="name-input"
-            id="last-name-input"
-            value={lastName}
-            onChange={(event) => setLastName(event.currentTarget.value)}
-            disabled={isLoading}
-            placeholder="Type in the last name of the guest"
-          />
-          {/* Hidden submit button to allow form submit when the user presses the Enter key */}
-          <input type="submit" hidden />
-        </form>
+        <div className="page-top-container">
+          <div className="page-top">
+            {/* Form containing the input fields for the names */}
+            <form onSubmit={handleTopFormSubmit} className="name-input-form">
+              <label className="name-label" htmlFor="first-name-input">
+                First name
+              </label>
+              <input
+                className="name-input"
+                id="first-name-input"
+                value={firstName}
+                onChange={(event) => setFirstName(event.currentTarget.value)}
+                disabled={isLoading}
+                placeholder="Type in the first name of the guest"
+              />
+              <br />
+              <label className="name-label" htmlFor="last-name-input">
+                Last name
+              </label>
+              <input
+                className="name-input"
+                id="last-name-input"
+                value={lastName}
+                onChange={(event) => setLastName(event.currentTarget.value)}
+                disabled={isLoading}
+                placeholder="Type in the last name of the guest"
+              />
+              {/* Hidden submit button to allow form submit when the user presses the Enter key */}
+              <input type="submit" hidden />
+            </form>
+            {/* Shows the filter for the guest list */}
+            <fieldset className="filter">
+              <legend>Filter</legend>
+              <div className="mainFilter">
+                <div>
+                  <input
+                    type="radio"
+                    id="all"
+                    value="all"
+                    name="filter-selection"
+                    onClick={handleFilterCheckboxClicked}
+                    defaultChecked
+                  />
+                  <label htmlFor="all">all</label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id="attending"
+                    value="attending"
+                    name="filter-selection"
+                    onClick={handleFilterCheckboxClicked}
+                  />
+                  <label htmlFor="attending">attending</label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id="notattending"
+                    value="notattending"
+                    name="filter-selection"
+                    onClick={handleFilterCheckboxClicked}
+                  />
+                  <label htmlFor="notattending">not attending</label>
+                </div>
+              </div>
+              <button onClick={() => deleteAllAttendingGuests(shownGuests)}>
+                Remove all attending guests
+              </button>
+            </fieldset>
+          </div>
+        </div>
         {/* Display loading message as long as the guest list hasn't been fetched */}
         {isLoading ? (
           'Loading...'
         ) : (
           /* Display the guest list after it has been fetched */
-          <div>
-            <div className="all-guests-container">
-              {/* Map through the guest array and display the properties and the related buttons and checkboxes */}
-              {shownGuests.map((guest: Guest) => {
-                return (
-                  <div
-                    className="guest-container"
-                    data-test-id="guest"
-                    key={`guest-${guest.id}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={guest.attending}
-                      aria-label={`${guest.firstName} ${guest.lastName} attending status`}
-                      onChange={(event) => {
-                        toggleGuestAttending(
-                          guest.id,
-                          event.currentTarget.checked,
-                        ).catch((error) => console.log(error));
-                      }}
-                    />
+          <div className="all-guests-outer-container">
+            {/* Only shows guest list container when there are guests to display.
+            Otherwise there would just be a collapsed dark border if there are no guests. */}
+            {shownGuests.length > 0 && (
+              <div className={'all-guests-container'}>
+                {/* Map through the guest array and display the properties and the related buttons and checkboxes */}
+                {shownGuests.map((guest: Guest) => {
+                  return (
                     <div
-                      className="guest-name"
+                      className="guest-container"
+                      data-test-id="guest"
+                      key={`guest-${guest.id}`}
                       onDoubleClick={() => handleGuestDoubleclick(guest.id)}
                     >
-                      {guest.firstName} {guest.lastName}
-                    </div>
-                    <button
-                      className="remove-button"
-                      onClick={() => deleteGuest(guest.id)}
-                    >
-                      <FontAwesomeIcon
-                        className="remove-icon"
-                        icon={faXmark}
-                        color="red"
+                      <input
+                        type="checkbox"
+                        checked={guest.attending}
+                        aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+                        onChange={(event) => {
+                          toggleGuestAttending(
+                            guest.id,
+                            event.currentTarget.checked,
+                          ).catch((error) => console.log(error));
+                        }}
                       />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-            <button onClick={() => deleteAllAttendingGuests(shownGuests)}>
-              Remove all attending guests
-            </button>
-            {/* Shows the filter for the guest list */}
-            <fieldset>
-              <legend>Filter</legend>
-              <div>
-                <input
-                  type="radio"
-                  id="all"
-                  value="all"
-                  name="filter-selection"
-                  onClick={handleFilterCheckboxClicked}
-                  defaultChecked
-                />
-                <label htmlFor="all">all</label>
+                      <div className="guest-name">
+                        {guest.firstName} {guest.lastName}
+                      </div>
+                      <button
+                        className="remove-button"
+                        onClick={() => deleteGuest(guest.id)}
+                      >
+                        <FontAwesomeIcon
+                          className="remove-icon"
+                          icon={faXmark}
+                          color="red"
+                        />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
-              <div>
-                <input
-                  type="radio"
-                  id="attending"
-                  value="attending"
-                  name="filter-selection"
-                  onClick={handleFilterCheckboxClicked}
-                />
-                <label htmlFor="attending">attending</label>
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  id="notattending"
-                  value="notattending"
-                  name="filter-selection"
-                  onClick={handleFilterCheckboxClicked}
-                />
-                <label htmlFor="notattending">not attending</label>
-              </div>
-            </fieldset>
+            )}
             {/* If edit mode is on it displays input fields to change the names of the guest */}
             {editMode && (
-              <EditGuestForm
-                changedFirstName={changedFirstName}
-                setChangedFirstName={setChangedFirstName}
-                changedLastName={changedLastName}
-                setChangedLastName={setChangedLastName}
-                isLoading={isLoading}
-                setEditMode={setEditMode}
-                updateGuestNames={updateGuestNames}
-                guestToEdit={guestToEdit}
-              />
+              <div className="guest-list-form">
+                <EditGuestForm
+                  changedFirstName={changedFirstName}
+                  setChangedFirstName={setChangedFirstName}
+                  changedLastName={changedLastName}
+                  setChangedLastName={setChangedLastName}
+                  isLoading={isLoading}
+                  setEditMode={setEditMode}
+                  updateGuestNames={updateGuestNames}
+                  guestToEdit={guestToEdit}
+                />
+              </div>
             )}
           </div>
         )}

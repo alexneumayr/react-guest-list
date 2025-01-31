@@ -1,15 +1,21 @@
 .name-input {
   height: 50px;
-  width: 500px;
+  width: 100%;
+  max-width: 800px;
   font-size: 20px;
   padding: 20px;
   font-family: Figtree, sans-serif;
   font-weight: 500;
-  display: block;
+  margin-bottom: 10px;
 }
 
 input::placeholder {
   font-style: italic;
+}
+
+.name-input-form label {
+  display: block;
+  justify-self: start;
 }
 
 .guest-container {
@@ -48,13 +54,32 @@ input[type='checkbox'] {
   color: white;
 }
 
-.guest-name:hover {
+.guest-container:hover:not(:first-child) {
   font-weight: 800;
+  border-top: 1px solid rgb(47, 51, 73);
+}
+
+.guest-container:hover:first-child {
+  font-weight: 800;
+  border-bottom: 1px solid rgb(47, 51, 73);
+}
+
+.guest-container:hover:not(:last-child) {
+  border-bottom: 1px solid rgb(47, 51, 73);
 }
 
 .all-guests-container {
   width: 500px;
   margin-top: 20px;
+  border: 1px solid rgb(47, 51, 73);
+  box-shadow: -1px 9px 27px -14px rgba(0, 0, 0, 0.75);
+  margin-bottom: 20px;
+}
+
+.all-guests-outer-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 header {
@@ -70,6 +95,42 @@ header {
   font-weight: 800;
 }
 
-main {
+.page-top {
   margin: 0 20px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  width: 100%;
+  max-width: 1000px;
+  gap: 20px;
+}
+
+.name-input-form {
+  grid-column: 1;
+}
+
+.guest-list-form {
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.page-top-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.filter button {
+  height: 30px;
+  font-family: Figtree, sans-serif;
+  font-weight: 700;
+  color: white;
+  background-color: rgb(47, 51, 73);
+}
+
+.filter button:hover {
+  background-color: black;
 }
