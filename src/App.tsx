@@ -164,7 +164,7 @@ export default function App() {
         </div>
         {/* Display loading message as long as the guest list hasn't been fetched */}
         {isLoading ? (
-          'Loading...'
+          <div className="loading-container">Loading...</div>
         ) : (
           /* Display the guest list after it has been fetched */
           <div className="all-guests-outer-container">

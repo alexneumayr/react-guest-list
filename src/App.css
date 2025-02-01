@@ -183,3 +183,8 @@ header {
   background-color: black;
   cursor: pointer;
 }
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+}
