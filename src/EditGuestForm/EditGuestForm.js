@@ -38,7 +38,16 @@ export default function EditGuestForm({
 }: Props) {
   // Function that updates the user data and exits edit mode when the "Save changes" button is clicked
   function handleSaveChangesButtonClick() {
-    updateGuestNames(guestToEdit.id, changedFirstName, changedLastName, shownGuests, setShownGuests).catch(
+    updateGuestNames(guestToEdit.id, changedFirstName, changedLastName).then(guestFromApiResponse => {
+      const newShownGuests = shownGuests.map(guest => {
+      if (guest.id === guestFromApiResponse.id) {
+        return guestFromApiResponse;
+      } else {
+        return guest;
+      }});
+      setShownGuests(newShownGuests);
+    }
+    ).catch(
       (error) => console.log(error),
     );
     setEditMode(false); // Turns edit mode off

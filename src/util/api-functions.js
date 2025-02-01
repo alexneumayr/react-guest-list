@@ -10,7 +10,7 @@ type Guest = {
 };
 
 // Function to create a new guest
-export async function createGuest(firstName, lastName, shownGuests, setShownGuests) {
+export async function createGuest(firstName, lastName) {
   const response = await fetch(`${baseUrl}/guests`, {
     method: 'POST',
     headers: {
@@ -20,26 +20,21 @@ export async function createGuest(firstName, lastName, shownGuests, setShownGues
   });
   const createdGuest = await response.json();
   console.log('API response from createGuest()', createdGuest);
-  console.log('createGuest() shownGuests',shownGuests);
-  setShownGuests([...shownGuests, createdGuest]);
+  return createdGuest;
 }
 
 // Function to delete a single guest
-export async function deleteGuest(id: number, shownGuests, setShownGuests) {
+export async function deleteGuest(id: number) {
   const response = await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
   const deletedGuest = await response.json();
   console.log('API response from deleteGuest()', deletedGuest);
-  // Create a temporary array of the guest list for state setting and remove the deleted guest
-  const newShownGuests = shownGuests.filter(guest => guest.id !== deletedGuest.id);
-  setShownGuests(newShownGuests);
+  return deletedGuest;
 }
 
 // Function to toggle the attending status of a guest
 export async function toggleGuestAttending(
   id: number,
-  checkboxStatus: boolean,
-  shownGuests, setShownGuests
-) {
+  checkboxStatus: boolean) {
   const response = await fetch(`${baseUrl}/guests/${id}`, {
     method: 'PUT',
     headers: {
@@ -49,23 +44,15 @@ export async function toggleGuestAttending(
   });
   const updatedGuest = await response.json();
   console.log('API response from toggleGuestAttending()', updatedGuest);
-  // Create a temporary array of the guest list for state setting and change updated guest
-  const newShownGuests = shownGuests.map(guest => {
-    if (guest.id === id) {
-      return updatedGuest;
-    } else {
-      return guest;
-    }});
-    setShownGuests(newShownGuests);
+  return updatedGuest;
+
 }
 
 // Function to change the names of a guest
 export async function updateGuestNames(
   id: number,
   changedFirstName: string,
-  changedLastName: string,
-  shownGuests,
-  setShownGuests
+  changedLastName: string
 ) {
   const response = await fetch(`${baseUrl}/guests/${id}`, {
     method: 'PUT',
@@ -79,14 +66,7 @@ export async function updateGuestNames(
   });
   const updatedGuest = await response.json();
   console.log('API response from updateGuestNames()', updatedGuest);
-  // Create a temporary array of the guest list for state setting and change updated guest
-  const newShownGuests = shownGuests.map(guest => {
-    if (guest.id === id) {
-      return updatedGuest;
-    } else {
-      return guest;
-    }});
-    setShownGuests(newShownGuests);
+  return updatedGuest;
 }
 
 // Function to delete all attending guests

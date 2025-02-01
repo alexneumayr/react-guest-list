@@ -56,7 +56,7 @@ export default function App() {
     event.preventDefault();
     // Checks if the user has typed in the full name
     if (firstName && lastName) {
-       createGuest(firstName, lastName, shownGuests, setShownGuests).catch((error) => console.log(error));
+       createGuest(firstName, lastName).then(guestFromApiResponse => setShownGuests([...shownGuests, guestFromApiResponse])).catch((error) => console.log(error));
       setFirstName('');
       setLastName('');
 
@@ -191,8 +191,14 @@ export default function App() {
                           toggleGuestAttending(
                             guest.id,
                             event.currentTarget.checked,
-                            shownGuests, setShownGuests
-                          ).catch((error) => console.log(error));
+
+                          ).then(guestFromApiResponse => {const newShownGuests = shownGuests.map(singleGuest => {
+                            if (singleGuest.id === guestFromApiResponse.id) {
+                              return guestFromApiResponse;
+                            } else {
+                              return singleGuest;
+                            }});
+                            setShownGuests(newShownGuests);}).catch((error) => console.log(error));
                         }}
                       />
                       {/* Shows guest name */}
@@ -203,7 +209,7 @@ export default function App() {
                       <button
                         className="remove-button"
                         aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                        onClick={() => deleteGuest([guest.id], shownGuests, setShownGuests)}
+                        onClick={() => deleteGuest(guest.id).then(guestFromApiResponse => setShownGuests(shownGuests.filter(currentGuest => currentGuest.id !== guestFromApiResponse.id)))}
                       >
                         <FontAwesomeIcon
                           className="remove-icon"
