@@ -27,8 +27,8 @@ export default function App() {
   const [shownGuests, setShownGuests] = useState([
     {
       id: 0,
-      firstName: '',
-      lastName: '',
+      firstName: 'test',
+      lastName: 'user',
       attending: false,
     },
   ]); // state of the displayed guest list (for TypeScript it needs to already have a guest item)
@@ -49,16 +49,17 @@ export default function App() {
     getGuests(setShownGuests, filter, isLoading, setIsLoading).catch((error) =>
       console.log(error),
     );
-  }, [filter, isLoading, editMode, shownGuests]);
+  }, []);
 
   // Creates a new user and clears input fields when the Enter key is pressed
-  function handleTopFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+   function handleTopFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Checks if the user has typed in the full name
     if (firstName && lastName) {
-      createGuest(firstName, lastName).catch((error) => console.log(error));
+       createGuest(firstName, lastName, shownGuests, setShownGuests).catch((error) => console.log(error));
       setFirstName('');
       setLastName('');
+
     } else {
       // Displays an alert if the user has not typed in the full name
       alert('Please input both first name and last name');
@@ -155,7 +156,7 @@ export default function App() {
               </button>
               <button
                 className="remove-all-attending-guests-button"
-                onClick={() => deleteAllAttendingGuests(shownGuests)}
+                onClick={() => deleteAllAttendingGuests(shownGuests, setShownGuests)}
               >
                 Remove all attending guests
               </button>
@@ -190,6 +191,7 @@ export default function App() {
                           toggleGuestAttending(
                             guest.id,
                             event.currentTarget.checked,
+                            shownGuests, setShownGuests
                           ).catch((error) => console.log(error));
                         }}
                       />
@@ -201,7 +203,7 @@ export default function App() {
                       <button
                         className="remove-button"
                         aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                        onClick={() => deleteGuest(guest.id)}
+                        onClick={() => deleteGuest([guest.id], shownGuests, setShownGuests)}
                       >
                         <FontAwesomeIcon
                           className="remove-icon"
@@ -229,6 +231,8 @@ export default function App() {
                   setEditMode={setEditMode}
                   updateGuestNames={updateGuestNames}
                   guestToEdit={guestToEdit}
+                  shownGuests={shownGuests}
+                  setShownGuests={setShownGuests}
                 />
               </div>
             )}

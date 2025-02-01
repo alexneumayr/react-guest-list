@@ -33,13 +33,18 @@ export default function EditGuestForm({
   setEditMode,
   updateGuestNames,
   guestToEdit,
+  shownGuests,
+  setShownGuests,
 }: Props) {
   // Function that updates the user data and exits edit mode when the "Save changes" button is clicked
   function handleSaveChangesButtonClick() {
-    updateGuestNames(guestToEdit.id, changedFirstName, changedLastName).catch(
+    updateGuestNames(guestToEdit.id, changedFirstName, changedLastName, shownGuests, setShownGuests).catch(
       (error) => console.log(error),
     );
-    setEditMode(false);
+    setEditMode(false); // Turns edit mode off
+    setChangedFirstName(''); // Clears first name input field
+    setChangedLastName(''); // Clears last name input field
+
   }
   return (
     <div className={styles.editGuestFormContainer}>
@@ -75,6 +80,8 @@ export default function EditGuestForm({
             type="button"
             onClick={() => {
               setEditMode(false);
+              setChangedFirstName(''); // Clears first name input field
+              setChangedLastName(''); // Clears last name input field
             }}
           >
             Cancel
