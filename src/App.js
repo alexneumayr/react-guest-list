@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import EditGuestForm from './EditGuestForm/EditGuestForm';
 import {
   createGuest,
-  deleteAllAttendingGuests,
   deleteGuest,
   getGuests,
   getSingleGuestForEditing,
@@ -24,6 +23,14 @@ type Guest = {
 export default function App() {
   const [firstName, setFirstName] = useState(''); // state of the input field for the first name
   const [lastName, setLastName] = useState(''); // state of the input field for the last name
+  const [allGuests, setAllGuests] = useState([
+    {
+      id: 0,
+      firstName: 'test',
+      lastName: 'user',
+      attending: false,
+    },
+  ]); // state of a list containing all guests (for TypeScript it needs to already have a guest item)
   const [shownGuests, setShownGuests] = useState([
     {
       id: 0,
@@ -31,7 +38,7 @@ export default function App() {
       lastName: 'user',
       attending: false,
     },
-  ]); // state of the displayed guest list (for TypeScript it needs to already have a guest item)
+  ]); // state of a list containing the displayed guests (for TypeScript it needs to already have a guest item)
   const [isLoading, setIsLoading] = useState(true); // state to track if the guest list has been fetched
   const [filter, setFilter] = useState({ status: 'all' }); // state of the filter for the guest list
   const [editMode, setEditMode] = useState(false); // state of the edit mode
@@ -46,7 +53,7 @@ export default function App() {
 
   // Fetches the guest list on first render and when something changes
   useEffect(() => {
-    getGuests(setShownGuests, filter, isLoading, setIsLoading).catch((error) =>
+    getGuests(setAllGuests, filter, isLoading, setIsLoading).catch((error) =>
       console.log(error),
     );
   }, []);
@@ -56,7 +63,7 @@ export default function App() {
     event.preventDefault();
     // Checks if the user has typed in the full name
     if (firstName && lastName) {
-       createGuest(firstName, lastName).then(guestFromApiResponse => setShownGuests([...shownGuests, guestFromApiResponse])).catch((error) => console.log(error));
+       createGuest(firstName, lastName).then(guestFromApiResponse => setAllGuests([...allGuests, guestFromApiResponse])).catch((error) => console.log(error));
       setFirstName('');
       setLastName('');
 
@@ -84,6 +91,39 @@ export default function App() {
       setChangedLastName,
     ).catch((error) => console.log(error));
   }
+
+  /* When the user click the "Remove All Attending Guests" button, it creates a filtered array with just the attending guests and calls the deleteGuest() method for each guest and sets the allGuests state accordingly */
+  function handleRemoveAllAttendingGuestsButtonClicked()
+  {
+    const allAttendingGuests = allGuests.filter((guest) => guest.attending);
+    allAttendingGuests.forEach((guest) => {
+     deleteGuest(guest.id).then(guestFromApiResponse => setAllGuests(prevAllGuests => prevAllGuests.filter(currentGuest => currentGuest.id !== guestFromApiResponse.id))).catch((error) => console.log(error));
+   });
+  }
+
+  useEffect(() => {
+    switch (filter.status) {
+      case 'attending':
+        setShownGuests(
+          allGuests.filter((guest: Guest) => {
+            return guest.attending;
+          }),
+        );
+        break;
+      case 'notattending':
+        setShownGuests(
+          allGuests.filter((guest: Guest) => {
+            return !guest.attending;
+          }),
+        );
+        break;
+      case 'all':
+        setShownGuests(allGuests);
+        break;
+      default:
+        throw new Error('Error filtering guests');
+    }
+  }, [filter.status, allGuests])
 
   return (
     <div className="App">
@@ -156,7 +196,7 @@ export default function App() {
               </button>
               <button
                 className="remove-all-attending-guests-button"
-                onClick={() => deleteAllAttendingGuests(shownGuests, setShownGuests)}
+                onClick={handleRemoveAllAttendingGuestsButtonClicked}
               >
                 Remove all attending guests
               </button>
@@ -171,7 +211,7 @@ export default function App() {
           <div className="all-guests-outer-container">
             {/* Only shows guest list container when there are guests to display.
             Otherwise there would just be a collapsed dark border if there are no guests. */}
-            {shownGuests.length > 0 && (
+            {allGuests.length > 0 && (
               <div className="all-guests-container">
                 {/* Map through the guest array and display the properties and the related buttons and checkboxes */}
                 {shownGuests.map((guest: Guest) => {
@@ -192,13 +232,13 @@ export default function App() {
                             guest.id,
                             event.currentTarget.checked,
 
-                          ).then(guestFromApiResponse => {const newShownGuests = shownGuests.map(singleGuest => {
+                          ).then(guestFromApiResponse => {const newShownGuests = allGuests.map(singleGuest => {
                             if (singleGuest.id === guestFromApiResponse.id) {
                               return guestFromApiResponse;
                             } else {
                               return singleGuest;
                             }});
-                            setShownGuests(newShownGuests);}).catch((error) => console.log(error));
+                            setAllGuests(newShownGuests);}).catch((error) => console.log(error));
                         }}
                       />
                       {/* Shows guest name */}
@@ -209,7 +249,7 @@ export default function App() {
                       <button
                         className="remove-button"
                         aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                        onClick={() => deleteGuest(guest.id).then(guestFromApiResponse => setShownGuests(shownGuests.filter(currentGuest => currentGuest.id !== guestFromApiResponse.id)))}
+                        onClick={() => deleteGuest(guest.id).then(guestFromApiResponse => setAllGuests(allGuests.filter(currentGuest => currentGuest.id !== guestFromApiResponse.id)))}
                       >
                         <FontAwesomeIcon
                           className="remove-icon"
@@ -237,8 +277,8 @@ export default function App() {
                   setEditMode={setEditMode}
                   updateGuestNames={updateGuestNames}
                   guestToEdit={guestToEdit}
-                  shownGuests={shownGuests}
-                  setShownGuests={setShownGuests}
+                  shownGuests={allGuests}
+                  setShownGuests={setAllGuests}
                 />
               </div>
             )}

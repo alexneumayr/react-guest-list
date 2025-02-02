@@ -69,17 +69,9 @@ export async function updateGuestNames(
   return updatedGuest;
 }
 
-// Function to delete all attending guests
-export function deleteAllAttendingGuests(shownGuests: Guest[]) {
-  const allAttendingGuests = shownGuests.filter((guest) => guest.attending);
-  allAttendingGuests.forEach((guest) => {
-    deleteGuest(guest.id).catch((error) => console.log(error));
-  });
-}
-
 // Function to fetch the guest list and apply the filter
 export async function getGuests(
-  setShownGuests: (guests: Guest[]) => void,
+  setAllGuests: (guests: Guest[]) => void,
   filter: { status: string },
   isLoading: boolean,
   setIsLoading: (loadingStatus: boolean) => void,
@@ -89,21 +81,21 @@ export async function getGuests(
   console.log('Fetched guest list data');
   switch (filter.status) {
     case 'attending':
-      setShownGuests(
+      setAllGuests(
         allGuests.filter((guest: Guest) => {
           return guest.attending;
         }),
       );
       break;
     case 'notattending':
-      setShownGuests(
+      setAllGuests(
         allGuests.filter((guest: Guest) => {
           return !guest.attending;
         }),
       );
       break;
     case 'all':
-      setShownGuests(allGuests);
+      setAllGuests(allGuests);
       break;
     default:
       throw new Error('Error filtering guests');
