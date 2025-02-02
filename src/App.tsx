@@ -51,22 +51,27 @@ export default function App() {
     attending: false,
   }); // state of the guest who is is being changed in edit mode (initialised for TypeScript)
 
-  // Fetches the guest list on first render and when something changes
+  // Fetches the guest list on first render
   useEffect(() => {
-    getGuests(setAllGuests, filter, isLoading, setIsLoading).catch((error) =>
-      console.log(error),
-    );
-  }, []);
+    if (isLoading) {
+      getGuests(setAllGuests, filter, isLoading, setIsLoading).catch((error) =>
+        console.log(error),
+      );
+    }
+  }, [isLoading, filter]);
 
   // Creates a new user and clears input fields when the Enter key is pressed
-   function handleTopFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleTopFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Checks if the user has typed in the full name
     if (firstName && lastName) {
-       createGuest(firstName, lastName).then(guestFromApiResponse => setAllGuests([...allGuests, guestFromApiResponse])).catch((error) => console.log(error));
+      createGuest(firstName, lastName)
+        .then((guestFromApiResponse) =>
+          setAllGuests([...allGuests, guestFromApiResponse]),
+        )
+        .catch((error) => console.log(error));
       setFirstName('');
       setLastName('');
-
     } else {
       // Displays an alert if the user has not typed in the full name
       alert('Please input both first name and last name');
@@ -93,12 +98,19 @@ export default function App() {
   }
 
   /* When the user click the "Remove All Attending Guests" button, it creates a filtered array with just the attending guests and calls the deleteGuest() method for each guest and sets the allGuests state accordingly */
-  function handleRemoveAllAttendingGuestsButtonClicked()
-  {
+  function handleRemoveAllAttendingGuestsButtonClicked() {
     const allAttendingGuests = allGuests.filter((guest) => guest.attending);
     allAttendingGuests.forEach((guest) => {
-     deleteGuest(guest.id).then(guestFromApiResponse => setAllGuests(prevAllGuests => prevAllGuests.filter(currentGuest => currentGuest.id !== guestFromApiResponse.id))).catch((error) => console.log(error));
-   });
+      deleteGuest(guest.id)
+        .then((guestFromApiResponse) =>
+          setAllGuests((prevAllGuests) =>
+            prevAllGuests.filter(
+              (currentGuest) => currentGuest.id !== guestFromApiResponse.id,
+            ),
+          ),
+        )
+        .catch((error) => console.log(error));
+    });
   }
 
   useEffect(() => {
@@ -123,7 +135,7 @@ export default function App() {
       default:
         throw new Error('Error filtering guests');
     }
-  }, [filter.status, allGuests])
+  }, [filter.status, allGuests]);
 
   return (
     <div className="App">
@@ -231,14 +243,22 @@ export default function App() {
                           toggleGuestAttending(
                             guest.id,
                             event.currentTarget.checked,
-
-                          ).then(guestFromApiResponse => {const newShownGuests = allGuests.map(singleGuest => {
-                            if (singleGuest.id === guestFromApiResponse.id) {
-                              return guestFromApiResponse;
-                            } else {
-                              return singleGuest;
-                            }});
-                            setAllGuests(newShownGuests);}).catch((error) => console.log(error));
+                          )
+                            .then((guestFromApiResponse) => {
+                              const newShownGuests = allGuests.map(
+                                (singleGuest) => {
+                                  if (
+                                    singleGuest.id === guestFromApiResponse.id
+                                  ) {
+                                    return guestFromApiResponse;
+                                  } else {
+                                    return singleGuest;
+                                  }
+                                },
+                              );
+                              setAllGuests(newShownGuests);
+                            })
+                            .catch((error) => console.log(error));
                         }}
                       />
                       {/* Shows guest name */}
@@ -249,7 +269,16 @@ export default function App() {
                       <button
                         className="remove-button"
                         aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
-                        onClick={() => deleteGuest(guest.id).then(guestFromApiResponse => setAllGuests(allGuests.filter(currentGuest => currentGuest.id !== guestFromApiResponse.id)))}
+                        onClick={() =>
+                          deleteGuest(guest.id).then((guestFromApiResponse) =>
+                            setAllGuests(
+                              allGuests.filter(
+                                (currentGuest) =>
+                                  currentGuest.id !== guestFromApiResponse.id,
+                              ),
+                            ),
+                          )
+                        }
                       >
                         <FontAwesomeIcon
                           className="remove-icon"

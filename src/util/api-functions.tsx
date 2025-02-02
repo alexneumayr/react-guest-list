@@ -10,7 +10,7 @@ type Guest = {
 };
 
 // Function to create a new guest
-export async function createGuest(firstName, lastName) {
+export async function createGuest(firstName: string, lastName: string) {
   const response = await fetch(`${baseUrl}/guests`, {
     method: 'POST',
     headers: {
@@ -18,7 +18,7 @@ export async function createGuest(firstName, lastName) {
     },
     body: JSON.stringify({ firstName: firstName, lastName: lastName }),
   });
-  const createdGuest = await response.json();
+  const createdGuest: Guest = await response.json();
   console.log('API response from createGuest()', createdGuest);
   return createdGuest;
 }
@@ -26,7 +26,7 @@ export async function createGuest(firstName, lastName) {
 // Function to delete a single guest
 export async function deleteGuest(id: number) {
   const response = await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
-  const deletedGuest = await response.json();
+  const deletedGuest: Guest = await response.json();
   console.log('API response from deleteGuest()', deletedGuest);
   return deletedGuest;
 }
@@ -34,7 +34,8 @@ export async function deleteGuest(id: number) {
 // Function to toggle the attending status of a guest
 export async function toggleGuestAttending(
   id: number,
-  checkboxStatus: boolean) {
+  checkboxStatus: boolean,
+) {
   const response = await fetch(`${baseUrl}/guests/${id}`, {
     method: 'PUT',
     headers: {
@@ -42,17 +43,16 @@ export async function toggleGuestAttending(
     },
     body: JSON.stringify({ attending: checkboxStatus }),
   });
-  const updatedGuest = await response.json();
+  const updatedGuest: Guest = await response.json();
   console.log('API response from toggleGuestAttending()', updatedGuest);
   return updatedGuest;
-
 }
 
 // Function to change the names of a guest
 export async function updateGuestNames(
   id: number,
   changedFirstName: string,
-  changedLastName: string
+  changedLastName: string,
 ) {
   const response = await fetch(`${baseUrl}/guests/${id}`, {
     method: 'PUT',
@@ -64,7 +64,7 @@ export async function updateGuestNames(
       lastName: changedLastName,
     }),
   });
-  const updatedGuest = await response.json();
+  const updatedGuest: Guest = await response.json();
   console.log('API response from updateGuestNames()', updatedGuest);
   return updatedGuest;
 }
