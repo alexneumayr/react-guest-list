@@ -23,22 +23,8 @@ type Guest = {
 export default function App() {
   const [firstName, setFirstName] = useState(''); // state of the input field for the first name
   const [lastName, setLastName] = useState(''); // state of the input field for the last name
-  const [allGuests, setAllGuests] = useState([
-    {
-      id: 0,
-      firstName: 'test',
-      lastName: 'user',
-      attending: false,
-    },
-  ]); // state of a list containing all guests (for TypeScript it needs to already have a guest item)
-  const [shownGuests, setShownGuests] = useState([
-    {
-      id: 0,
-      firstName: 'test',
-      lastName: 'user',
-      attending: false,
-    },
-  ]); // state of a list containing the displayed guests (for TypeScript it needs to already have a guest item)
+  const [allGuests, setAllGuests] = useState<Guest[]>([]); // state of a list containing all guests
+  const [shownGuests, setShownGuests] = useState<Guest[]>([]); // state of a list containing the displayed guests
   const [isLoading, setIsLoading] = useState(true); // state to track if the guest list has been fetched
   const [filter, setFilter] = useState({ status: 'all' }); // state of the filter for the guest list
   const [editMode, setEditMode] = useState(false); // state of the edit mode
