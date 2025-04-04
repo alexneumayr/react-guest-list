@@ -1,5 +1,5 @@
 // Sets the base URL for all API functions
-const baseUrl = 'https://sfswsj-4000.csb.app';
+const baseUrl = 'https://alexneumayr-express-gue-54.deno.dev';
 
 // Defines data types of the guest object for TypeScript
 type Guest = {
